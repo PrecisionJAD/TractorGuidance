@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tractor Guidance System</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div id="map"></div>
+	<div id="tractor"></div>
+	<form id="input-form">
+		<label for="guidance-width">Guidance Width (feet):</label>
+		<input type="number" id="guidance-width" name="guidance-width" required>
+		<button type="submit">Start Guidance</button>
+	</form>
+	<div id="info">
+		<p>Acres: <span id="acres">0</span></p>
+		<p>Speed: <span id="speed">0</span> mph</p>
+	</div>
+	<script src="script.js"></script>
+</body>
+</html>
+CSS:
+
+css
+Copy code
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+#map {
+	height: 80%;
+}
+#tractor {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 50px;
+	width: 50px;
+	background-image: url("tractor.png");
+	background-repeat: no-repeat;
+	background-size: contain;
+	z-index: 1;
+}
+#input-form {
+	position: absolute;
+	bottom: 10%;
+	left: 50%;
+	transform: translate(-50%, 0);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 2;
+}
+#input-form label {
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+#info {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	font-size: 16px;
+	z-index: 2;
+}
+#info p {
+	margin-bottom: 5px;
+}
+JavaScript:
+
+less
+Copy code
+// Set up the map
+var map = L.map('map').setView([37.7749, -122.4194], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+}).addTo(map);
+
+// Add the tractor marker
+var tractorMarker = L.marker([37.7749, -122.4194], {
+    icon: L.icon({
+        iconUrl: 'tractor.png',
+        iconSize: [50, 50],
+        iconAnchor: [25, 25],
+    }),
+    zIndexOffset: 1,
+}).addTo(map);
+
+// Initialize variables
+var guidanceWidth = 0;
+var previousLocation = null;
+var totalArea = 0;
+var acres = 0;
+var speed = 0;
+
+// Handle form submission
+document.getElementById('input-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    guidanceWidth = Number(document.getElementById('guidance-width').value);
+});
+
+// Update tractor position and guidance area on location change
+function onLocationChange(location) {
+    tractorMarker.setLatLng(location);
+
+    if (previousLocation !== null) {
+        var distance = previousLocation.distanceTo(location);
+        var area = (guidanceWidth / 3) * distance;
+        totalArea += area;
+        acres = Math.round(totalArea / 4046.86 * 100) / 
+
+
+
+
